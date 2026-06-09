@@ -1,22 +1,17 @@
 from langchain_openai import ChatOpenAI
 from langchain.chains import LLMChain
 from langchain.prompts import MessagesPlaceholder, HumanMessagePromptTemplate, ChatPromptTemplate
-from langchain.memory import ConversationBufferMemory, FileChatMessageHistory
+from langchain.memory import ConversationSummaryMemory, FileChatMessageHistory
 from dotenv import load_dotenv
 
 load_dotenv()
 
-chat = ChatOpenAI()  # chatOpenAI because we are going to have a conversation not just a simple completion
-
-
-# we use ConversationBufferMemory to keep track of the conversation history, it will store the messages in a buffer 
-# and return them when needed. We set the memory_key to "messages" and return_messages to True so that we can access
-# the messages in the prompt.
-memory = ConversationBufferMemory(
+chat = ChatOpenAI(verbose=True)
+memory = ConversationSummaryMemory(
+    # chat_memory=FileChatMessageHistory("messages.json"),
     memory_key="messages",
     return_messages=True,
-    chat_memory=FileChatMessageHistory(file_path="messages.json") 
-    # we use FileChatMessageHistory to store the messages in a file, so that we can access them later
+    llm=chat
 )
 prompt = ChatPromptTemplate(
     input_variables=["content", "messages"],
@@ -29,9 +24,9 @@ prompt = ChatPromptTemplate(
 chain = LLMChain(
     llm=chat,
     prompt=prompt,
-    memory=memory
+    memory=memory,
+    verbose=True
 )
-
 
 continue_chatting = True
 
