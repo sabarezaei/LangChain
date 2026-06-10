@@ -1,12 +1,18 @@
 
-from dotenv import load_dotenv
 from langchain_openai import OpenAI
 from langchain_community.document_loaders import TextLoader
 
+from langchain_text_splitters import CharacterTextSplitter
 
 
-#load_dotenv()
 
+
+text_splitter = CharacterTextSplitter(
+    
+    separator= "\n",
+    chunk_size = 200,
+    chunk_overlap =100
+    )
 # there are variety of data_loader classes available in langchain
 # TextLoader, PyPDFLoader, JSONLoader, etc.
 # langchain also allows us to point at a remote file (e.g. on Amazon S3) and load it in the same way 
@@ -16,7 +22,9 @@ from langchain_community.document_loaders import TextLoader
 
 loader = TextLoader("facts.txt")
 
-docs = loader.load()
+docs = loader.load_and_split(text_splitter=text_splitter)
 
-
-print(docs)
+dashed_line = "_".join("_" for _ in range(40))
+for doc in docs:
+    print(doc.page_content)
+    print(dashed_line)
