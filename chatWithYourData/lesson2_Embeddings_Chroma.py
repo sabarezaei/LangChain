@@ -25,11 +25,14 @@ loader = TextLoader("facts.txt")
 
 docs = loader.load_and_split(text_splitter=text_splitter)
 
-db = Chroma.from_documents(
-    docs,
+db = Chroma.from_documents(   #from_documents is to save the data into emb
+    docs,                     # we are telling Chroma to calculate the vectore database for this documents 
     embedding=embeddings,
     persist_directory = "emb"  # the embeddings are going to be saved in the emb SQLite database inside my directory
 )
+
+
+# we calculate the embeddings once and save them and later use them, so we dont calculate them multiple times
 
 dashed_line = "_".join("_" for _ in range(40))
 for doc in docs:
@@ -39,12 +42,12 @@ for doc in docs:
 
 results = db.similarity_search_with_score(
     "what is an interesting fact about english language?",  # this is our question that we want to find the answer for, inside our documents
-    k = 1   # this defines the number of chunks of data you want your algorithm return to you
+    k = 3   # this defines the number of chunks of data you want your algorithm return to you
     )
 
 for result in results: 
     print(result[1])  # this is the similarity score between the question and the chunk of the document that is returned to us
     print(result[0].page_content)
-    print("_".join("_" for _ in range (40)))
+    print(dashed_line)
 
     print(result)
